@@ -1,0 +1,38 @@
+# requirements.txt for Brain Tumor Detection Flask App
+# Created: 2024
+
+# ============================================
+# Web Framework Requirements
+# ============================================
+Flask==2.3.3          # Web framework
+Werkzeug==2.3.7       # WSGI utilities
+Jinja2==3.1.2         # Templating engine
+click==8.1.7          # Command line interface
+itsdangerous==2.1.2   # Security utilities
+markupsafe==2.1.3     # HTML escaping
+
+# ============================================
+# Deep Learning Requirements
+# ============================================
+torch==2.0.1          # PyTorch deep learning framework
+torchvision==0.15.2   # Computer vision models & transforms
+
+# ============================================
+# Image Processing
+# ============================================
+Pillow==10.1.0        # Python Imaging Library
+opencv-python==4.8.1.78  # OpenCV for image processing
+numpy==1.24.3         # Numerical computing
+
+# ============================================
+# Data Visualization
+# ============================================
+matplotlib==3.7.3     # Plotting library
+pandas==2.1.0         # Data manipulation
+seaborn==0.13.0       # Statistical visualizations
+
+# ============================================
+# Utilities
+# ============================================
+python-dotenv==1.0.0  # Environment variables
+requests==2.31.0      # HTTP library

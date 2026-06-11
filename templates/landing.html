@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>NeuraScan AI — Advanced Brain Tumor Detection Platform</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #00E5FF;
+            --cyan-dim: #00B8CC;
+            --cyan-glow: rgba(0, 229, 255, 0.12);
+            --bg: #020810;
+            --bg2: #060d1a;
+            --bg3: #0a1628;
+            --text: #e8f4f8;
+            --muted: #6a8aa0;
+            --border: rgba(0, 229, 255, 0.12);
+            --red: #FF4560;
+            --green: #00E396;
+            --purple: #775DD0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ---- GRID + GLOW BACKGROUND (from first file) ---- */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 70px 70px;
+        }
+
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(0, 229, 255, 0.04);
+            top: -150px;
+            right: -100px;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(124, 92, 191, 0.04);
+            bottom: 100px;
+            left: -100px;
+        }
+
+        /* ---- NAVIGATION (polished blend) ---- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 5rem;
+            background: rgba(2, 8, 16, 0.8);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-logo em {
+            color: var(--cyan);
+            font-style: normal;
+        }
+
+        .logo-mark {
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid var(--cyan);
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mark::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1.5px solid var(--cyan);
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 0.5rem 1.3rem;
+            border-radius: 7px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-cyan {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 0.5rem 1.4rem;
+            border-radius: 7px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-cyan:hover {
+            box-shadow: 0 0 22px rgba(0, 229, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ---- HERO SECTION (second file's style + SVG focus) ---- */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 5rem 5rem;
+            gap: 4rem;
+        }
+
+        .hero-left {
+            flex: 1;
+            max-width: 560px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 100px;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.75rem;
+            color: var(--cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .badge-pulse {
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.75);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.035em;
+            margin-bottom: 1.8rem;
+        }
+
+        .hero-title .hollow {
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(0, 229, 255, 0.45);
+        }
+
+        .hero-title .lit {
+            color: var(--cyan);
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--muted);
+            line-height: 1.75;
+            margin-bottom: 2.5rem;
+            max-width: 460px;
+            font-weight: 300;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-lg {
+            padding: 0.9rem 2.2rem;
+            border-radius: 9px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.25s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .btn-lg-cyan {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+        }
+
+        .btn-lg-cyan:hover {
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-lg-out {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-lg-out:hover {
+            border-color: rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 3rem;
+            padding-top: 1.8rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-item-mini {
+            flex: 0 0 auto;
+        }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--cyan);
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 4px;
+        }
+
+        /* ---- RIGHT VISUAL: SVG BRAIN + SCAN ANIM (second file's masterpiece) ---- */
+        .hero-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .scan-container {
+            position: relative;
+            width: 420px;
+            height: 420px;
+        }
+
+        .scan-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            animation: orbit 20s linear infinite;
+        }
+
+        .scan-ring:nth-child(2) {
+            inset: 30px;
+            animation-duration: 15s;
+            animation-direction: reverse;
+            border-color: rgba(0, 229, 255, 0.08);
+        }
+
+        .scan-ring:nth-child(3) {
+            inset: 60px;
+            animation-duration: 25s;
+            border-color: rgba(0, 229, 255, 0.06);
+        }
+
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .scan-ring::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            margin-top: -3px;
+        }
+
+        .brain-svg-wrap {
+            position: absolute;
+            inset: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, rgba(0, 229, 255, 0.08) 0%, rgba(2, 8, 16, 0.9) 70%);
+            overflow: hidden;
+            border: 1.5px solid rgba(0, 229, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brain-svg {
+            width: 80%;
+            height: 80%;
+            opacity: 0.85;
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 60px;
+            right: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            box-shadow: 0 0 12px var(--cyan);
+            animation: scanAnim 3s ease-in-out infinite;
+            border-radius: 1px;
+        }
+
+        @keyframes scanAnim {
+            0% {
+                top: 60px;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: calc(100% - 60px);
+                opacity: 0;
+            }
+        }
+
+        .detection-badge {
+            position: absolute;
+            background: rgba(255, 69, 96, 0.12);
+            border: 1px solid rgba(255, 69, 96, 0.4);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.72rem;
+            color: var(--red);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            animation: fadeInOut 3s ease infinite;
+            right: 0px;
+            top: 100px;
+        }
+
+        .detection-badge2 {
+            position: absolute;
+            background: rgba(0, 227, 150, 0.1);
+            border: 1px solid rgba(0, 227, 150, 0.35);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.72rem;
+            color: var(--green);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            left: -10px;
+            bottom: 130px;
+            animation: fadeInOut 3s ease 1.5s infinite;
+        }
+
+        @keyframes fadeInOut {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(0.95);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .confidence-bar {
+            position: absolute;
+            bottom: 60px;
+            right: -10px;
+            background: rgba(6, 13, 26, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            width: 160px;
+            backdrop-filter: blur(4px);
+        }
+
+        .conf-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .conf-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .conf-bar-track {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            width: 94%;
+            background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+            border-radius: 2px;
+            animation: fillAnim 2.2s ease-out forwards;
+        }
+
+        @keyframes fillAnim {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 94%;
+            }
+        }
+
+        /* ---- SECTION GLOBAL (blend) ---- */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 5rem;
+        }
+
+        .sec-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.9rem;
+        }
+
+        .sec-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.9rem, 3vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            line-height: 1.08;
+        }
+
+        .sec-sub {
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.75;
+            font-weight: 300;
+            margin-top: 0.8rem;
+        }
+
+        /* ---- ABOUT SECTION (first file's structure with clarity) ---- */
+        .about-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .about-text .sec-sub {
+            max-width: 440px;
+        }
+
+        .about-points {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .a-point {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .a-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cyan);
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .a-point-text strong {
+            display: block;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text);
+        }
+
+        .a-point-text span {
+            font-size: 0.83rem;
+            color: var(--muted);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* ---- TUMOR TYPES (first file's premium grid) ---- */
+        .types-bg {
+            background: var(--bg2);
+        }
+
+        .types-hdr {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5px;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+        }
+
+        .t-card {
+            background: var(--bg);
+            padding: 2.2rem 1.8rem;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+
+        .t-card:hover {
+            background: var(--bg3);
+        }
+
+        .t-top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+
+        .glioma .t-top-bar {
+            background: var(--red);
+        }
+
+        .meningioma .t-top-bar {
+            background: var(--purple);
+        }
+
+        .pituitary .t-top-bar {
+            background: var(--cyan);
+        }
+
+        .notumor .t-top-bar {
+            background: var(--green);
+        }
+
+        .t-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .glioma .t-icon {
+            background: rgba(255, 69, 96, 0.1);
+        }
+
+        .meningioma .t-icon {
+            background: rgba(124, 92, 191, 0.1);
+        }
+
+        .pituitary .t-icon {
+            background: var(--cyan-glow);
+        }
+
+        .notumor .t-icon {
+            background: rgba(0, 227, 150, 0.1);
+        }
+
+        .t-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .t-acc {
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+        }
+
+        .glioma .t-acc {
+            color: var(--red);
+        }
+
+        .meningioma .t-acc {
+            color: var(--purple);
+        }
+
+        .pituitary .t-acc {
+            color: var(--cyan);
+        }
+
+        .notumor .t-acc {
+            color: var(--green);
+        }
+
+        .t-desc {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        /* ---- TECH STACK (first file's modern card grid) ---- */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tech-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem 1.6rem;
+            background: var(--bg2);
+            transition: border-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .tech-card:hover {
+            border-color: rgba(0, 229, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .tech-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--cyan-glow);
+            border: 1px solid rgba(0, 229, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tech-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .tech-desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.55;
+            font-weight: 300;
+        }
+
+        /* ---- CTA SECTION (clean, no detection box) ---- */
+        .cta-section {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            padding: 6rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-glow {
+            position: absolute;
+            width: 600px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(ellipse, rgba(0, 229, 255, 0.05), transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 1.2rem;
+        }
+
+        .cta-sub {
+            color: var(--muted);
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            font-weight: 300;
+            line-height: 1.75;
+        }
+
+        /* ---- FOOTER (elegant) ---- */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 2.5rem 5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-logo em {
+            color: var(--cyan);
+            font-style: normal;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyan);
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 1000px) {
+            .hero {
+                flex-direction: column;
+                padding: 6rem 2rem 3rem;
+                text-align: center;
+            }
+
+            .hero-left {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .hero-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .about-wrap {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .about-points {
+                text-align: left;
+            }
+
+            .types-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 4rem 2rem;
+            }
+
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .scan-container {
+                transform: scale(0.85);
+            }
+
+            .hero-right {
+                min-height: 400px;
+            }
+
+            .detection-badge,
+            .detection-badge2 {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.6rem;
+            }
+
+            .confidence-bar {
+                width: 140px;
+                bottom: 30px;
+                right: -20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="grid-bg"></div>
+    <div class="glow-orb orb1"></div>
+    <div class="glow-orb orb2"></div>
+
+    <!-- NAVIGATION -->
+    <nav id="nav">
+        <a href="#" class="nav-logo">
+            <div class="logo-mark"></div>Neura<em>Scan</em>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#tumor-types">Tumor Types</a></li>
+            <li><a href="#technology">Technology</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="/login" class="btn-ghost">Log In</a>
+            <a href="/signup" class="btn-cyan">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- HERO with your favorite SVG scan visualization -->
+    <section class="hero">
+        <div class="hero-left">
+            <h1 class="hero-title">
+                Early Detection<br>
+                <span class="hollow">Saves Lives.</span><br>
+                <span class="lit">AI Makes It Possible.</span>
+            </h1>
+            <p class="hero-desc">
+                NeuraScan uses deep learning (MobileNetV2) to analyze brain MRI scans and classify tumor types with
+                clinical-grade
+                accuracy — helping researchers and medical professionals make faster, better-informed decisions.
+            </p>
+            <div class="hero-actions">
+                <a href="/signup" class="btn-lg btn-lg-cyan">Create Free Account</a>
+                <a href="/login" class="btn-lg btn-lg-out">Sign In</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item-mini"><span class="stat-num">94%</span>
+                    <div class="stat-lbl">Accuracy</div>
+                </div>
+                <div class="stat-item-mini"><span class="stat-num">4</span>
+                    <div class="stat-lbl">Tumor Classes</div>
+                </div>
+                <div class="stat-item-mini"><span class="stat-num">MobileNetV2</span>
+                    <div class="stat-lbl">Architecture</div>
+                </div>
+                <div class="stat-item-mini"><span class="stat-num">Transfer Learning</span>
+                    <div class="stat-lbl">Learning Method</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PREFERRED SVG BRAIN SCAN ANIMATION FROM landing.html -->
+        <div class="hero-right">
+            <div class="scan-container">
+                <div class="scan-ring"></div>
+                <div class="scan-ring"></div>
+                <div class="scan-ring"></div>
+                <div class="brain-svg-wrap">
+                    <svg class="brain-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="100" cy="100" rx="78" ry="65" fill="none" stroke="rgba(0,229,255,0.15)"
+                            stroke-width="1" />
+                        <path d="M100 45 C72 42 48 58 42 78 C36 98 42 118 52 130 C62 142 80 148 100 148"
+                            stroke="rgba(0,229,255,0.5)" stroke-width="1.5" fill="none" />
+                        <path d="M100 45 C128 42 152 58 158 78 C164 98 158 118 148 130 C138 142 120 148 100 148"
+                            stroke="rgba(0,229,255,0.5)" stroke-width="1.5" fill="none" />
+                        <line x1="100" y1="45" x2="100" y2="148" stroke="rgba(0,229,255,0.25)" stroke-width="1"
+                            stroke-dasharray="4,3" />
+                        <path d="M60 72 C70 68 80 72 82 80" stroke="rgba(0,229,255,0.35)" stroke-width="1"
+                            fill="none" />
+                        <path d="M50 92 C62 86 74 90 76 102" stroke="rgba(0,229,255,0.3)" stroke-width="1"
+                            fill="none" />
+                        <path d="M54 114 C66 108 78 112 80 122" stroke="rgba(0,229,255,0.3)" stroke-width="1"
+                            fill="none" />
+                        <path d="M140 72 C130 68 120 72 118 80" stroke="rgba(0,229,255,0.35)" stroke-width="1"
+                            fill="none" />
+                        <path d="M150 92 C138 86 126 90 124 102" stroke="rgba(0,229,255,0.3)" stroke-width="1"
+                            fill="none" />
+                        <path d="M146 114 C134 108 122 112 120 122" stroke="rgba(0,229,255,0.3)" stroke-width="1"
+                            fill="none" />
+                        <circle cx="72" cy="85" r="12" fill="rgba(255,69,96,0.12)" stroke="rgba(255,69,96,0.6)"
+                            stroke-width="1.5" />
+                        <circle cx="72" cy="85" r="6" fill="rgba(255,69,96,0.2)" />
+                        <circle cx="72" cy="85" r="2.5" fill="rgba(255,69,96,0.8)" />
+                        <line x1="60" y1="85" x2="66" y2="85" stroke="rgba(255,69,96,0.7)" stroke-width="1" />
+                        <line x1="78" y1="85" x2="84" y2="85" stroke="rgba(255,69,96,0.7)" stroke-width="1" />
+                        <line x1="72" y1="73" x2="72" y2="79" stroke="rgba(255,69,96,0.7)" stroke-width="1" />
+                        <line x1="72" y1="91" x2="72" y2="97" stroke="rgba(255,69,96,0.7)" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="scan-line"></div>
+                <div class="detection-badge">⚠ GLIOMA DETECTED</div>
+                <div class="detection-badge2">✓ ANALYSIS READY</div>
+                <div class="confidence-bar">
+                    <div class="conf-label">Confidence Score</div>
+                    <div class="conf-value">94.2%</div>
+                    <div class="conf-bar-track">
+                        <div class="conf-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION (first file's content) -->
+    <section class="section" id="about">
+        <div class="about-wrap">
+            <div class="about-text">
+                <div class="sec-tag">About the Project</div>
+                <h2 class="sec-title">AI-Assisted Brain<br>Tumor Analysis</h2>
+                <p class="sec-sub">
+                    NeuraScan is a Final Year Project developed at KFUEIT, combining transfer learning with MobileNetV2
+                    to build a clinically-relevant tool for brain tumor detection from MRI images.
+                </p>
+                <div class="about-points">
+                    <div class="a-point">
+                        <div class="a-dot"></div>
+                        <div class="a-point-text"><strong>Transfer Learning Architecture</strong><span>Leverages
+                                pre-trained MobileNetV2 weights on ImageNet, fine-tuned on a curated brain tumor MRI
+                                dataset.</span></div>
+                    </div>
+                    <div class="a-point">
+                        <div class="a-dot"></div>
+                        <div class="a-point-text"><strong>4-Class Classification</strong><span>Distinguishes between
+                                Glioma, Meningioma, Pituitary tumor, and No Tumor with a single forward pass.</span>
+                        </div>
+                    </div>
+                    <div class="a-point">
+                        <div class="a-dot"></div>
+                        <div class="a-point-text"><strong>Real-time & Upload Ready</strong><span>Optimized pipeline for
+                                both static MRI upload and real-time processing.</span></div>
+                    </div>
+                    <div class="a-point">
+                        <div class="a-dot"></div>
+                        <div class="a-point-text"><strong>Flask-Powered Backend</strong><span>Lightweight Python web
+                                server handles inference and result rendering efficiently.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TUMOR TYPES SECTION (first file premium grid) -->
+    <section class="section types-bg" id="tumor-types">
+        <div class="types-hdr">
+            <div class="sec-tag">Classification</div>
+            <h2 class="sec-title">4 Categories Detected</h2>
+            <p class="sec-sub" style="max-width:480px;margin:0.8rem auto 0">Our model identifies and classifies the most
+                clinically significant brain tumor types</p>
+        </div>
+        <div class="types-grid">
+            <div class="t-card glioma">
+                <div class="t-top-bar"></div>
+                <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF4560"
+                        stroke-width="1.8">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg></div>
+                <div class="t-name">Glioma</div>
+                <div class="t-acc">High-Grade Malignant</div>
+                <p class="t-desc">Originates from glial cells. Most common and aggressive brain tumor.</p>
+            </div>
+            <div class="t-card meningioma">
+                <div class="t-top-bar"></div>
+                <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C5CBF"
+                        stroke-width="1.8">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg></div>
+                <div class="t-name">Meningioma</div>
+                <div class="t-acc">Mostly Benign</div>
+                <p class="t-desc">Arises from the meninges surrounding the brain. Often slow-growing.</p>
+            </div>
+            <div class="t-card pituitary">
+                <div class="t-top-bar"></div>
+                <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E5FF"
+                        stroke-width="1.8">
+                        <ellipse cx="12" cy="12" rx="10" ry="6" />
+                        <line x1="12" y1="2" x2="12" y2="6" />
+                        <line x1="12" y1="18" x2="12" y2="22" />
+                    </svg></div>
+                <div class="t-name">Pituitary</div>
+                <div class="t-acc">Hormonal Impact</div>
+                <p class="t-desc">Affects the pituitary gland and hormonal regulation.</p>
+            </div>
+            <div class="t-card notumor">
+                <div class="t-top-bar"></div>
+                <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E396"
+                        stroke-width="1.8">
+                        <polyline points="20,6 9,17 4,12" />
+                    </svg></div>
+                <div class="t-name">No Tumor</div>
+                <div class="t-acc">Clear Scan</div>
+                <p class="t-desc">No evidence of tumor. High specificity minimizes false positives.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TECHNOLOGY STACK (first file) -->
+    <section class="section" id="technology">
+        <div class="tech-hdr" style="text-align:center; margin-bottom:3rem;">
+            <div class="sec-tag">Technology Stack</div>
+            <h2 class="sec-title">Built with Modern AI Tools</h2>
+            <p class="sec-sub" style="max-width:480px;margin:0.8rem auto 0">Production-grade technologies powering every
+                layer of NeuraScan</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">MobileNetV2</div>
+                    <div class="tech-desc">Lightweight CNN architecture fine-tuned for brain tumor classification.</div>
+                </div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <polyline points="16,18 22,12 16,6" />
+                        <polyline points="8,6 2,12 8,18" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">TensorFlow / Keras</div>
+                    <div class="tech-desc">Model training, validation, and serialization.</div>
+                </div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">Flask Backend</div>
+                    <div class="tech-desc">Serving the ML model via REST API.</div>
+                </div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">OpenCV</div>
+                    <div class="tech-desc">Real-time webcam capture and preprocessing.</div>
+                </div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">NumPy / Pillow</div>
+                    <div class="tech-desc">Image array manipulation and augmentation utilities.</div>
+                </div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF">
+                        <ellipse cx="12" cy="5" rx="9" ry="3" />
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                    </svg></div>
+                <div>
+                    <div class="tech-name">HuggingFace Spaces</div>
+                    <div class="tech-desc">Cloud deployment with zero-config GPU inference.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION (no detection box) -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <div style="position:relative;z-index:1">
+            <div class="sec-tag">Get Started</div>
+            <h2 class="cta-title">Ready to Detect Tumors<br>with AI Precision?</h2>
+            <p class="cta-sub">Create a free account and start uploading MRI scans for instant AI-powered
+                classification. Built for researchers, medical students, and healthcare professionals.</p>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+                <a href="#" class="btn-lg btn-lg-cyan">Create Free Account</a>
+                <a href="#" class="btn-lg btn-lg-out">Already have an account?</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">
+            <div class="logo-mark" style="width:28px;height:28px;border-radius:6px"></div>Neura<em>Scan</em>
+        </div>
+        <div class="footer-copy">© 2026 NeuraScan AI · FYP</div>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('nav');
+            if (nav) nav.style.background = window.scrollY > 60 ? 'rgba(2,8,16,0.97)' : 'rgba(2,8,16,0.8)';
+        });
+        // keep any internal anchor smoothness
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== "#" && document.querySelector(targetId)) {
+                    e.preventDefault();
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

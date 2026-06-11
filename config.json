@@ -1,0 +1,20 @@
+{
+  "model_type": "mobilenet_v2",
+  "num_classes": 4,
+  "class_names": [
+    "glioma_tumor",
+    "meningioma_tumor",
+    "no_tumor",
+    "pituitary_tumor"
+  ],
+  "img_size": 160,
+  "best_val_accuracy": 0.9357,
+  "architecture": "MobileNetV2 (ImageNet V2) + custom classifier",
+  "gradcam_target": "model.features[-1]",
+  "dataset": "Hemg/brain-tumor-classification-mri",
+  "references": [
+    "arxiv:2506.09161",
+    "arxiv:1610.02391",
+    "arxiv:2307.10506"
+  ]
+}

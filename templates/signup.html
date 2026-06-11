@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — NeuraScan AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cyan: #00E5FF;
+    --cyan-dim: #00B8CC;
+    --cyan-glow: rgba(0,229,255,0.12);
+    --bg: #020810;
+    --bg2: #060d1a;
+    --bg3: #0d1f35;
+    --text: #e8f4f8;
+    --muted: #607d8b;
+    --border: rgba(0,229,255,0.1);
+    --red: #FF4560;
+    --green: #00E396;
+    --purple: #7C5CBF;
+  }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  .grid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(0,229,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.022) 1px, transparent 1px); background-size: 70px 70px; }
+  .orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(90px); }
+  .orb1 { width: 500px; height: 500px; background: rgba(0,229,255,0.04); top: -150px; left: -100px; }
+  .orb2 { width: 420px; height: 420px; background: rgba(124,92,191,0.04); bottom: -80px; right: -80px; }
+
+  .page { position: relative; z-index: 1; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+
+  /* RIGHT INFO PANEL */
+  .right-panel {
+    background: var(--bg2); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 3rem; position: relative; overflow: hidden;
+    order: 2;
+  }
+  .right-panel::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, rgba(0,229,255,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  .rp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .logo-mark { width: 36px; height: 36px; border: 1.5px solid var(--cyan); border-radius: 9px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .logo-mark::before { content: ''; position: absolute; width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid var(--cyan); }
+  .logo-mark::after { content: ''; position: absolute; width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 8px var(--cyan); }
+  .rp-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; }
+  .rp-logo-text em { color: var(--cyan); font-style: normal; }
+  .rp-center { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .rp-tag { font-size: 0.72rem; font-weight: 700; color: var(--cyan); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .rp-title { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.2rem; }
+  .rp-title em { color: var(--cyan); font-style: normal; }
+  .rp-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.75; font-weight: 300; max-width: 340px; margin-bottom: 2.2rem; }
+
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 1rem; align-items: flex-start; padding: 1.1rem 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-num-box { width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 800; color: var(--cyan); }
+  .step-info strong { display: block; font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .step-info span { font-size: 0.8rem; color: var(--muted); font-weight: 300; line-height: 1.5; }
+
+  /* FORM PANEL */
+  .left-panel { display: flex; align-items: center; justify-content: center; padding: 3rem; order: 1; }
+  .form-card { width: 100%; max-width: 420px; }
+  .form-title { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.4rem; }
+  .form-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 2.2rem; font-weight: 300; }
+  .form-sub a { color: var(--cyan); text-decoration: none; font-weight: 500; }
+  .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .form-input { width: 100%; padding: 0.78rem 1.1rem; background: var(--bg2); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; color: var(--text); font-size: 0.92rem; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .form-input:focus { border-color: rgba(0,229,255,0.4); box-shadow: 0 0 0 3px rgba(0,229,255,0.06); }
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); cursor: pointer; }
+  .strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+  .strength-seg { height: 3px; flex: 1; border-radius: 2px; background: rgba(255,255,255,0.07); transition: background 0.3s; }
+  .strength-text { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .terms-wrap { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 1.5rem; cursor: pointer; }
+  .terms-wrap input { accent-color: var(--cyan); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .terms-wrap span { font-size: 0.82rem; color: var(--muted); line-height: 1.5; font-weight: 300; }
+  .btn-submit { width: 100%; padding: 0.9rem; background: var(--cyan); color: var(--bg); border: none; border-radius: 9px; font-size: 0.98rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-submit:hover { box-shadow: 0 0 28px rgba(0,229,255,0.38); transform: translateY(-1px); }
+  .error-msg { display: none; background: rgba(255,69,96,0.08); border: 1px solid rgba(255,69,96,0.3); border-radius: 7px; padding: 0.7rem 1rem; font-size: 0.83rem; color: var(--red); margin-bottom: 1.2rem; }
+  .error-msg.show { display: block; }
+  .success-msg { display: none; background: rgba(0,227,150,0.08); border: 1px solid rgba(0,227,150,0.3); border-radius: 7px; padding: 0.7rem 1rem; font-size: 0.83rem; color: var(--green); margin-bottom: 1.2rem; }
+  .success-msg.show { display: block; }
+  .login-link { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted); }
+  .login-link a { color: var(--cyan); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="page">
+  <div class="left-panel">
+    <div class="form-card">
+      <h1 class="form-title">Create account</h1>
+      <p class="form-sub">Already have one? <a href="/login">Sign in here</a></p>
+
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="name-row">
+        <div class="form-group">
+          <label class="form-label" for="fname">First Name</label>
+          <input class="form-input" type="text" id="fname" placeholder="USMAN">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lname">Last Name</label>
+          <input class="form-input" type="text" id="lname" placeholder="SAQIB">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="role">Role</label>
+        <select class="form-input" id="role" style="appearance: auto;">
+          <option value="researcher">Researcher</option>
+          <option value="doctor">Doctor</option>
+          <option value="student">Student</option>
+          <option value="engineer">Engineer</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input class="form-input" type="email" id="email" placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="password" placeholder="Min 8 characters" oninput="checkStrength(this.value)">
+          <div class="input-icon" onclick="togglePass('password', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#607d8b" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+        </div>
+        <div class="strength-bar" id="strengthBar">
+          <div class="strength-seg" id="s1"></div>
+          <div class="strength-seg" id="s2"></div>
+          <div class="strength-seg" id="s3"></div>
+          <div class="strength-seg" id="s4"></div>
+        </div>
+        <div class="strength-text" id="strengthText"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirm">Confirm Password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="confirm" placeholder="Repeat password">
+          <div class="input-icon" onclick="togglePass('confirm', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#607d8b" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="terms-wrap" onclick="document.getElementById('terms').click()">
+        <input type="checkbox" id="terms">
+        <span>I agree to the <a href="#" style="color:#00E5FF;">Terms of Service</a> and <a href="#" style="color:#00E5FF;">Privacy Policy</a></span>
+      </div>
+
+      <button class="btn-submit" onclick="handleSignup()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Create Free Account
+      </button>
+
+      <div class="login-link">Already registered? <a href="/login">Sign in →</a></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <a href="/" class="rp-logo">
+      <div class="logo-mark"></div>
+      <div class="rp-logo-text">Neura<em>Scan</em></div>
+    </a>
+    <div class="rp-center">
+      <div class="rp-tag">Get Started in Minutes</div>
+      <h2 class="rp-title">Start Detecting<br>Tumors with<br><em>AI Today</em></h2>
+      <p class="rp-desc">Join researchers and medical professionals using NeuraScan's MobileNetV2 model for fast, accurate brain tumor MRI classification.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num-box"><div class="step-num">01</div></div><div class="step-info"><strong>Create your account</strong><span>Free registration — no credit card needed.</span></div></div>
+        <div class="step"><div class="step-num-box"><div class="step-num">02</div></div><div class="step-info"><strong>Upload an MRI scan</strong><span>Drag & drop a brain MRI image to the dashboard.</span></div></div>
+        <div class="step"><div class="step-num-box"><div class="step-num">03</div></div><div class="step-info"><strong>Get instant results</strong><span>Our AI classifies the tumor type in under 2 seconds.</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePass(id, iconWrap) {
+  const inp = document.getElementById(id);
+  const svg = iconWrap.querySelector('svg');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+function checkStrength(val) {
+  const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+  const txt = document.getElementById('strengthText');
+  segs.forEach(s => s.style.background = 'rgba(255,255,255,0.07)');
+  if (!val) { txt.textContent = ''; return; }
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#FF4560', '#FF9800', '#00B8CC', '#00E396'];
+  const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+  for (let i = 0; i < score; i++) segs[i].style.background = colors[score-1];
+  txt.style.color = colors[score-1];
+  txt.textContent = labels[score-1] || '';
+}
+
+async function handleSignup() {
+  const firstName = document.getElementById('fname').value.trim();
+  const lastName = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirm').value;
+  const role = document.getElementById('role').value;
+  const terms = document.getElementById('terms').checked;
+  const errDiv = document.getElementById('errorMsg');
+  const sucDiv = document.getElementById('successMsg');
+
+  errDiv.classList.remove('show');
+  sucDiv.classList.remove('show');
+
+  if (!firstName || !lastName) {
+    errDiv.textContent = 'Please enter your full name.';
+    errDiv.classList.add('show');
+    return;
+  }
+  if (!email || !email.includes('@')) {
+    errDiv.textContent = 'Please enter a valid email address.';
+    errDiv.classList.add('show');
+    return;
+  }
+  if (password.length < 8) {
+    errDiv.textContent = 'Password must be at least 8 characters.';
+    errDiv.classList.add('show');
+    return;
+  }
+  if (password !== confirm) {
+    errDiv.textContent = 'Passwords do not match.';
+    errDiv.classList.add('show');
+    return;
+  }
+  if (!terms) {
+    errDiv.textContent = 'Please accept the Terms of Service.';
+    errDiv.classList.add('show');
+    return;
+  }
+
+  // Disable button
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4 31.4" style="animation: spin 1s linear infinite"/></svg> Creating account...';
+
+  try {
+    const response = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        password: password,
+        role: role
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      sucDiv.textContent = '✓ Account created successfully! Redirecting to login...';
+      sucDiv.classList.add('show');
+      setTimeout(() => { window.location.href = '/login'; }, 2000);
+    } else {
+      errDiv.textContent = data.message;
+      errDiv.classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Create Free Account';
+    }
+  } catch (error) {
+    errDiv.textContent = 'Network error. Please try again.';
+    errDiv.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Create Free Account';
+  }
+}
+</script>
+</body>
+</html>
